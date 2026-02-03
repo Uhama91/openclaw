@@ -273,6 +273,22 @@ function looksLikeUtf8Text(buffer?: Buffer): boolean {
   }
 }
 
+/**
+ * Detect binary audio formats by magic bytes.
+ * OGG container: "OggS" (RFC 3533 Section 6)
+ * MP3 with ID3v2: "ID3" (id3.org spec Section 3.1)
+ */
+function hasBinaryAudioMagic(buffer?: Buffer): boolean {
+  if (!buffer || buffer.length < 4) return false;
+  if (buffer[0] === 0x4f && buffer[1] === 0x67 && buffer[2] === 0x67 && buffer[3] === 0x53) {
+    return true;
+  }
+  if (buffer[0] === 0x49 && buffer[1] === 0x44 && buffer[2] === 0x33) {
+    return true;
+  }
+  return false;
+}
+
 function decodeTextSample(buffer?: Buffer): string {
   if (!buffer || buffer.length === 0) {
     return "";
@@ -363,7 +379,9 @@ async function extractFileBlocks(params: {
     const forcedTextMimeResolved = forcedTextMime ?? resolveTextMimeFromName(nameHint ?? "");
     const utf16Charset = resolveUtf16Charset(bufferResult?.buffer);
     const textSample = decodeTextSample(bufferResult?.buffer);
-    const textLike = Boolean(utf16Charset) || looksLikeUtf8Text(bufferResult?.buffer);
+    const textLike =
+      (Boolean(utf16Charset) || looksLikeUtf8Text(bufferResult?.buffer)) &&
+      !hasBinaryAudioMagic(bufferResult?.buffer);
     if (!forcedTextMimeResolved && kind === "audio" && !textLike) {
       continue;
     }
