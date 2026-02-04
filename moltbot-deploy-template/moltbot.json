@@ -1,0 +1,247 @@
+{
+  "meta": {
+    "lastTouchedVersion": "2026.2.1",
+    "lastTouchedAt": "2026-02-03T12:00:00.000Z"
+  },
+  "wizard": {
+    "lastRunAt": "2026-01-29T06:08:26.780Z",
+    "lastRunVersion": "2026.1.27-beta.1",
+    "lastRunCommand": "doctor",
+    "lastRunMode": "local"
+  },
+  "logging": {
+    "redactSensitive": "tools",
+    "redactPatterns": [
+      "token:",
+      "password:",
+      "secret:",
+      "api_key:"
+    ]
+  },
+  "diagnostics": {
+    "flags": [
+      "media.*",
+      "telegram.*"
+    ]
+  },
+  "auth": {
+    "profiles": {
+      "openrouter:default": {
+        "provider": "openrouter",
+        "mode": "api_key"
+      }
+    }
+  },
+  "agents": {
+    "defaults": {
+      "workspace": "/home/node/.openclaw/workspace",
+      "compaction": {
+        "mode": "safeguard"
+      },
+      "maxConcurrent": 4,
+      "subagents": {
+        "maxConcurrent": 8
+      },
+      "model": {
+        "primary": "openrouter/moonshotai/kimi-k2.5",
+        "fallbacks": [
+          "openrouter/deepseek/deepseek-v3.2",
+          "openrouter/anthropic/claude-haiku-4.5"
+        ]
+      },
+      "sandbox": {
+        "mode": "off",
+        "scope": "agent",
+        "workspaceAccess": "rw",
+        "docker": {
+          "network": "bridge",
+          "image": "openclaw-sandbox-python:bookworm-slim"
+        },
+        "browser": {
+          "enabled": true,
+          "headless": true,
+          "image": "openclaw-sandbox-browser:bookworm-slim",
+          "containerPrefix": "openclaw-sbx-browser-",
+          "cdpPort": 9222,
+          "vncPort": 5900,
+          "noVncPort": 6080,
+          "enableNoVnc": false,
+          "autoStart": true,
+          "autoStartTimeoutMs": 12000
+        }
+      },
+      "thinkingDefault": "off",
+      "imageModel": {
+        "primary": "openrouter/anthropic/claude-sonnet-4.5",
+        "fallbacks": [
+          "openrouter/google/gemini-2.0-flash-001"
+        ]
+      },
+      "models": {
+        "openrouter/moonshotai/kimi-k2.5": {
+          "alias": "kimi"
+        },
+        "openrouter/deepseek/deepseek-v3.2": {
+          "alias": "deepseek"
+        },
+        "openrouter/anthropic/claude-haiku-4.5": {
+          "alias": "haiku"
+        },
+        "openrouter/anthropic/claude-sonnet-4.5": {
+          "alias": "sonnet"
+        }
+      }
+    }
+  },
+  "messages": {
+    "ackReactionScope": "group-mentions"
+  },
+  "commands": {
+    "native": "auto",
+    "nativeSkills": "auto"
+  },
+  "channels": {
+    "telegram": {
+      "dmPolicy": "pairing",
+      "botToken": "${TELEGRAM_BOT_TOKEN}",
+      "groups": {
+        "*": {
+          "requireMention": true
+        }
+      },
+      "groupPolicy": "allowlist",
+      "streamMode": "partial"
+    }
+  },
+  "gateway": {
+    "port": 18789,
+    "mode": "local",
+    "bind": "lan",
+    "auth": {
+      "mode": "token",
+      "token": "${OPENCLAW_GATEWAY_TOKEN}"
+    },
+    "tailscale": {
+      "mode": "off",
+      "resetOnExit": false
+    }
+  },
+  "skills": {
+    "install": {
+      "nodeManager": "npm"
+    }
+  },
+  "plugins": {
+    "entries": {
+      "telegram": {
+        "enabled": true
+      }
+    }
+  },
+  "tools": {
+    "web": {
+      "search": {
+        "enabled": true,
+        "provider": "brave",
+        "apiKey": "${BRAVE_SEARCH_API_KEY}",
+        "maxResults": 5
+      },
+      "fetch": {
+        "enabled": true,
+        "maxChars": 50000
+      }
+    },
+    "media": {
+      "audio": {
+        "enabled": true,
+        "maxBytes": 20971520,
+        "timeoutSeconds": 120,
+        "models": [
+          {
+            "provider": "openai",
+            "model": "gpt-4o-mini-transcribe"
+          }
+        ]
+      },
+      "image": {
+        "enabled": true,
+        "maxBytes": 10485760
+      }
+    },
+    "sandbox": {
+      "tools": {
+        "allow": [
+          "exec",
+          "process",
+          "read",
+          "write",
+          "edit",
+          "apply_patch",
+          "sessions_list",
+          "sessions_history",
+          "sessions_send",
+          "sessions_spawn",
+          "session_status",
+          "group:web",
+          "browser"
+        ],
+        "deny": [
+          "canvas",
+          "nodes",
+          "cron",
+          "gateway"
+        ]
+      }
+    }
+  },
+  "models": {
+    "mode": "merge",
+    "providers": {
+      "openrouter": {
+        "baseUrl": "https://openrouter.ai/api/v1",
+        "apiKey": "${OPENROUTER_API_KEY}",
+        "api": "openai-completions",
+        "models": [
+          {
+            "id": "moonshotai/kimi-k2.5",
+            "name": "Kimi K2.5"
+          },
+          {
+            "id": "deepseek/deepseek-v3.2",
+            "name": "DeepSeek V3.2"
+          },
+          {
+            "id": "anthropic/claude-haiku-4.5",
+            "name": "Claude Haiku 4.5"
+          },
+          {
+            "id": "anthropic/claude-sonnet-4-5",
+            "name": "Claude Sonnet 4.5"
+          },
+          {
+            "id": "google/gemini-2.0-flash-001",
+            "name": "Gemini 2.0 Flash"
+          }
+        ]
+      },
+      "openai": {
+        "baseUrl": "https://api.openai.com/v1",
+        "apiKey": "${OPENAI_API_KEY}",
+        "api": "openai-completions",
+        "models": []
+      }
+    }
+  },
+  "browser": {
+    "enabled": true,
+    "headless": true,
+    "noSandbox": true,
+    "defaultProfile": "default",
+    "profiles": {
+      "default": {
+        "cdpPort": 9222,
+        "color": "#FF4500"
+      }
+    }
+  }
+}

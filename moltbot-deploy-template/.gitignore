@@ -1,0 +1,31 @@
+# Environment files with secrets
+.env
+.env.local
+.env.production
+
+# Credential files
+credentials/*.json
+credentials/*.pem
+credentials/*.key
+!credentials/README.md
+
+# Token files
+*_tokens.json
+
+# Settings with sensitive data
+settings/*.json
+
+# Workspace files
+workspace/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log
