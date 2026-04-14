@@ -1,5 +1,6 @@
 import type { OpenClawConfig } from "../config/config.js";
 import type { EmbeddedContextFile } from "./pi-embedded-helpers.js";
+import { runWorkspaceGovernanceMaintenanceIfDue } from "../workspace-governor/runtime.js";
 import { applyBootstrapHookOverrides } from "./bootstrap-hooks.js";
 import { buildBootstrapContextFiles, resolveBootstrapMaxChars } from "./pi-embedded-helpers.js";
 import {
@@ -50,11 +51,20 @@ export async function resolveBootstrapContextForRun(params: {
 }): Promise<{
   bootstrapFiles: WorkspaceBootstrapFile[];
   contextFiles: EmbeddedContextFile[];
+  workspaceNotes?: string[];
 }> {
+  const maintenance = await runWorkspaceGovernanceMaintenanceIfDue({
+    workspaceDir: params.workspaceDir,
+    config: params.config,
+  });
   const bootstrapFiles = await resolveBootstrapFilesForRun(params);
   const contextFiles = buildBootstrapContextFiles(bootstrapFiles, {
     maxChars: resolveBootstrapMaxChars(params.config),
     warn: params.warn,
   });
-  return { bootstrapFiles, contextFiles };
+  return {
+    bootstrapFiles,
+    contextFiles,
+    workspaceNotes: maintenance?.ran && maintenance.note ? [maintenance.note] : undefined,
+  };
 }

@@ -13,6 +13,7 @@ const TOOL_NAME_ALIASES: Record<string, string> = {
 export const TOOL_GROUPS: Record<string, string[]> = {
   // NOTE: Keep canonical (lowercase) tool names here.
   "group:memory": ["memory_search", "memory_get"],
+  "group:workspace": ["workspace_govern"],
   "group:web": ["web_search", "web_fetch"],
   // Basic workspace/file tools
   "group:fs": ["read", "write", "edit", "apply_patch"],
@@ -50,6 +51,7 @@ export const TOOL_GROUPS: Record<string, string[]> = {
     "session_status",
     "memory_search",
     "memory_get",
+    "workspace_govern",
     "web_search",
     "web_fetch",
     "image",
@@ -61,7 +63,14 @@ const TOOL_PROFILES: Record<ToolProfileId, ToolProfilePolicy> = {
     allow: ["session_status"],
   },
   coding: {
-    allow: ["group:fs", "group:runtime", "group:sessions", "group:memory", "image"],
+    allow: [
+      "group:fs",
+      "group:runtime",
+      "group:sessions",
+      "group:memory",
+      "group:workspace",
+      "image",
+    ],
   },
   messaging: {
     allow: [

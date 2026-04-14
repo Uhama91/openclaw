@@ -50,6 +50,23 @@ function buildMemorySection(params: { isMinimal: boolean; availableTools: Set<st
   ];
 }
 
+function buildWorkspaceGovernanceSection(params: {
+  isMinimal: boolean;
+  availableTools: Set<string>;
+  toolName: string;
+}) {
+  if (params.isMinimal || !params.availableTools.has("workspace_govern")) {
+    return [];
+  }
+  return [
+    "## Workspace Governance",
+    `When the user asks you to remember something or update workspace rules, persona, tool guidance, or skill docs, use ${params.toolName}.`,
+    "The governor routes durable notes to memory files and turns structural edits into explicit proposals.",
+    "Do not freehand-edit AGENTS.md, SOUL.md, USER.md, TOOLS.md, MEMORY.md, or skills/*/SKILL.md unless the user explicitly asks for a manual edit.",
+    "",
+  ];
+}
+
 function buildUserIdentitySection(ownerLine: string | undefined, isMinimal: boolean) {
   if (!ownerLine || isMinimal) {
     return [];
@@ -240,6 +257,8 @@ export function buildAgentSystemPrompt(params: {
     sessions_spawn: "Spawn a sub-agent session",
     session_status:
       "Show a /status-equivalent status card (usage + time + Reasoning/Verbose/Elevated); use for model-use questions (📊 session_status); optional per-session model override",
+    workspace_govern:
+      "Route remembered information into workspace files, manage proposals, and run workspace optimization",
     image: "Analyze an image with the configured image model",
   };
 
@@ -266,6 +285,7 @@ export function buildAgentSystemPrompt(params: {
     "sessions_history",
     "sessions_send",
     "session_status",
+    "workspace_govern",
     "image",
   ];
 
@@ -352,6 +372,11 @@ export function buildAgentSystemPrompt(params: {
     readToolName,
   });
   const memorySection = buildMemorySection({ isMinimal, availableTools });
+  const workspaceGovernanceSection = buildWorkspaceGovernanceSection({
+    isMinimal,
+    availableTools,
+    toolName: resolveToolName("workspace_govern"),
+  });
   const docsSection = buildDocsSection({
     docsPath: params.docsPath,
     isMinimal,
@@ -409,6 +434,7 @@ export function buildAgentSystemPrompt(params: {
     "",
     ...skillsSection,
     ...memorySection,
+    ...workspaceGovernanceSection,
     // Skip self-update for subagent/none modes
     hasGateway && !isMinimal ? "## OpenClaw Self-Update" : "",
     hasGateway && !isMinimal

@@ -2,6 +2,11 @@ import type { OpenClawConfig } from "./types.js";
 import type { ModelDefinitionConfig } from "./types.models.js";
 import { DEFAULT_CONTEXT_TOKENS } from "../agents/defaults.js";
 import { parseModelRef } from "../agents/model-selection.js";
+import {
+  DEFAULT_WORKSPACE_GOVERNANCE_BUDGET_RATIO,
+  DEFAULT_WORKSPACE_GOVERNANCE_LEDGER_FILE,
+  DEFAULT_WORKSPACE_GOVERNANCE_OPTIMIZE_EVERY,
+} from "../workspace-governor/types.js";
 import { DEFAULT_AGENT_MAX_CONCURRENT, DEFAULT_SUBAGENT_MAX_CONCURRENT } from "./agent-limits.js";
 import { resolveTalkApiKey } from "./talk.js";
 
@@ -435,6 +440,55 @@ export function applyContextPruningDefaults(cfg: OpenClawConfig): OpenClawConfig
     agents: {
       ...cfg.agents,
       defaults: nextDefaults,
+    },
+  };
+}
+
+export function applyWorkspaceGovernanceDefaults(cfg: OpenClawConfig): OpenClawConfig {
+  const defaults = cfg.agents?.defaults;
+  const governance = defaults?.workspaceGovernance;
+  if (!governance) {
+    return cfg;
+  }
+
+  let mutated = false;
+  const nextGovernance = { ...governance };
+  if (nextGovernance.enabled === undefined) {
+    nextGovernance.enabled = true;
+    mutated = true;
+  }
+  if (nextGovernance.mode === undefined) {
+    nextGovernance.mode = "hybrid";
+    mutated = true;
+  }
+  if (!nextGovernance.optimizeEvery?.trim()) {
+    nextGovernance.optimizeEvery = DEFAULT_WORKSPACE_GOVERNANCE_OPTIMIZE_EVERY;
+    mutated = true;
+  }
+  if (
+    typeof nextGovernance.budgetRatio !== "number" ||
+    !Number.isFinite(nextGovernance.budgetRatio)
+  ) {
+    nextGovernance.budgetRatio = DEFAULT_WORKSPACE_GOVERNANCE_BUDGET_RATIO;
+    mutated = true;
+  }
+  if (!nextGovernance.ledgerFile?.trim()) {
+    nextGovernance.ledgerFile = DEFAULT_WORKSPACE_GOVERNANCE_LEDGER_FILE;
+    mutated = true;
+  }
+
+  if (!mutated) {
+    return cfg;
+  }
+
+  return {
+    ...cfg,
+    agents: {
+      ...cfg.agents,
+      defaults: {
+        ...defaults,
+        workspaceGovernance: nextGovernance,
+      },
     },
   };
 }

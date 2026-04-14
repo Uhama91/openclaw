@@ -286,6 +286,18 @@
       "title": "Memory Get",
       "detailKeys": ["path", "from", "lines"]
     },
+    "workspace_govern": {
+      "emoji": "🧩",
+      "title": "Workspace Governor",
+      "actions": {
+        "remember": { "label": "remember", "detailKeys": ["intent", "targetPath"] },
+        "propose": { "label": "propose", "detailKeys": ["intent", "targetPath"] },
+        "apply": { "label": "apply", "detailKeys": ["proposalId", "targetPath"] },
+        "reject": { "label": "reject", "detailKeys": ["proposalId", "targetPath"] },
+        "optimize": { "label": "optimize" },
+        "status": { "label": "status" }
+      }
+    },
     "web_search": {
       "emoji": "🔎",
       "title": "Web Search",

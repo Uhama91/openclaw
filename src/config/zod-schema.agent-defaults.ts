@@ -53,6 +53,16 @@ export const AgentDefaultsSchema = z
     contextTokens: z.number().int().positive().optional(),
     cliBackends: z.record(z.string(), CliBackendSchema).optional(),
     memorySearch: MemorySearchSchema,
+    workspaceGovernance: z
+      .object({
+        enabled: z.boolean().optional(),
+        mode: z.literal("hybrid").optional(),
+        optimizeEvery: z.string().optional(),
+        budgetRatio: z.number().gt(0).lte(1).optional(),
+        ledgerFile: z.string().optional(),
+      })
+      .strict()
+      .optional(),
     contextPruning: z
       .object({
         mode: z.union([z.literal("off"), z.literal("cache-ttl")]).optional(),

@@ -1,4 +1,5 @@
 import type { ChannelId } from "../channels/plugins/types.js";
+import type { WorkspaceGovernanceConfig } from "../workspace-governor/types.js";
 import type {
   BlockStreamingChunkConfig,
   BlockStreamingCoalesceConfig,
@@ -132,6 +133,8 @@ export type AgentDefaultsConfig = {
   compaction?: AgentCompactionConfig;
   /** Vector memory search configuration (per-agent overrides supported). */
   memorySearch?: MemorySearchConfig;
+  /** Optional workspace self-governance for AGENTS.md / MEMORY.md / skills files. */
+  workspaceGovernance?: WorkspaceGovernanceConfig;
   /** Default thinking level when no /think directive is present. */
   thinkingDefault?: "off" | "minimal" | "low" | "medium" | "high" | "xhigh";
   /** Default verbose level when no /verbose directive is present. */

@@ -10,7 +10,12 @@ import {
 import { loadPluginManifestRegistry } from "../plugins/manifest-registry.js";
 import { validateJsonSchemaValue } from "../plugins/schema-validator.js";
 import { findDuplicateAgentDirs, formatDuplicateAgentDirError } from "./agent-dirs.js";
-import { applyAgentDefaults, applyModelDefaults, applySessionDefaults } from "./defaults.js";
+import {
+  applyAgentDefaults,
+  applyModelDefaults,
+  applySessionDefaults,
+  applyWorkspaceGovernanceDefaults,
+} from "./defaults.js";
 import { findLegacyConfigIssues } from "./legacy.js";
 import { OpenClawSchema } from "./zod-schema.js";
 
@@ -123,8 +128,10 @@ export function validateConfigObject(
   }
   return {
     ok: true,
-    config: applyModelDefaults(
-      applyAgentDefaults(applySessionDefaults(validated.data as OpenClawConfig)),
+    config: applyWorkspaceGovernanceDefaults(
+      applyModelDefaults(
+        applyAgentDefaults(applySessionDefaults(validated.data as OpenClawConfig)),
+      ),
     ),
   };
 }
